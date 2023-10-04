@@ -1,4 +1,5 @@
-source 'https://mirrors.tuna.tsinghua.edu.cn/rubygems/'
+# source 'https://mirrors.tuna.tsinghua.edu.cn/rubygems/'
+source 'https://rubygems.org'
 group :jekyll_plugins do
     gem 'classifier-reborn'
     gem 'jekyll'

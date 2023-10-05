@@ -6,7 +6,7 @@ share: "true"
 # 1 原理篇   
 ## 1.1 DDPM  
 ### 1.1.1 前向扩散  
-前向扩散指的是将一个复杂分布转换成简单分布的过程$\mathcal{T}:\mathbb{R}^d\mapsto\mathbb{R}^d$，即：  
+前向扩散指的是将一个复杂分布转换成简单分布的过程/$\mathcal{T}:\mathbb{R}^d\mapsto\mathbb{R}^d$/，即：  
 $$  
 \mathbf{x}_0\sim p_\mathrm{complex}\Longrightarrow \mathcal{T}(\mathbf{x}_0)\sim p_\mathrm{prior}  
 $$  

@@ -128,7 +128,7 @@ $$
 $$  
 ### 总结  
 综上，DDPM的训练和采样/推理过程如下图所示：  
-![[Pasted image 20231002142935.png|Pasted image 20231002142935.png]]  
+{% include figure.html path="assets/img/Pasted image 20231002142935.png" width="100%" %}  
 ## 基于score的生成模型  
 ### 引言  
 score-based生成模型是一种新的生成模型范式，在score-based之前，主要存在两种类型的生成模型：  
@@ -160,7 +160,7 @@ $$
 3. **蒙特卡罗采样方法：拒绝-接受法**  
 目的：希望从一个复杂分布$$p(x)$$采样$$N$$个样本  
 方法：使用一个简单分布$$q(x)$$为媒介（例如：高斯分布），这个分布必须满足它的$$c>0$$倍大于等于$$p(x)$$。首先从简单分布$$q(x)$$中采样得到$$x^*$$，然后以$$\frac{p(x^*)}{cq(x^*)}$$的概率保留这个样本，直到得到$$N$$个样本结束。  
-![[Pasted image 20231002164638.png|Pasted image 20231002164638.png]]  
+{% include figure.html path="assets/img/Pasted image 20231002164638.png" width="100%" %}  
   
 5. **MCMC**  
 **MCMC方法可以从复杂分布中进行采样**  

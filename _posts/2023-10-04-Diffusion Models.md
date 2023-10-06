@@ -1,5 +1,5 @@
 ---  
-layout: post  
+layout: distill  
 title: Diffusion Models  
 date: 2023-10-04 15:09:00  
 description: introduction about diffusion models  
@@ -8,6 +8,37 @@ tags:
 toc:  
   sidebar: left  
 giscus_comments: "true"  
+authors:  
+  - name: Wei Deng  
+    url: "https://wdaicv.site"  
+    affiliations:  
+      name: NULL  
+toc:  
+  - name: 原理篇  
+	    subsections:  
+	      - name: DDPM  
+			    subsections:  
+			      - name: 前向扩散  
+			      - name: 逆向扩散  
+			      - name: 模型训练  
+			      - name: 总结  
+	      - name: 基于score的生成模型  
+			    subsections:  
+			      - name: 引言  
+			      - name: 先验知识  
+			      - name: score-based模型的解决方案  
+	      - name: DDIM  
+			    subsections:  
+			      - name: Review of DDPM  
+			      - name: From DDPM to DDIM  
+  - name: 应用篇  
+	    subsections:  
+	      - name: SR3  
+	      - name: CDM  
+	      - name: SDEdit  
+	      - name: ILVR  
+	      - name: DiffusionCLIP  
+  - name: 参考  
 ---  
 2023  年扩散模型还有什么可做的方向？ - 谷粒多·凯特的回答 - 知乎 https://www.zhihu.com/question/568791838/answer/3195773725  
 # 原理篇   
@@ -128,7 +159,7 @@ $$
 $$  
 ### 总结  
 综上，DDPM的训练和采样/推理过程如下图所示：  
-{% include figure.html path="assets/img/Pasted image 20231002142935.png" width="100%" %}  
+{% include figure.html path="assets/img/Pasted image %% 20231002142935 %%.png" width="100%" %}  
 ## 基于score的生成模型  
 ### 引言  
 score-based生成模型是一种新的生成模型范式，在score-based之前，主要存在两种类型的生成模型：  
@@ -196,7 +227,7 @@ $$
 x_t=x_{t-1}+\frac{\delta}{2}\nabla_x\log p(x_{t-1})+\sqrt{\delta}\epsilon, \text{    where } \epsilon\sim\mathcal{N}(0, I)  
 $$  
 ## DDIM  
-#### Review of DDPM  
+### Review of DDPM  
 1. Diffusion阶段  
 $$  
 \begin{align}  

@@ -14,7 +14,7 @@ authors:
 toc:  
   - name: Introduction  
   - name: Preliminary  
-	- name: How Score-based Generative Models Work  
+  - name: How Score-based Generative Models Work  
   - name: Reference  
 ---  
 # Introduction  

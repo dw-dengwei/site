@@ -17,7 +17,7 @@ giscus_comments: "true"
 $$  
 \mathbf{x}_0\sim p_\mathrm{complex}\Longrightarrow \mathcal{T}(\mathbf{x}_0)\sim p_\mathrm{prior}  
 $$  
-在DDPM中，将这个过程定义为**马尔可夫链**，通过不断地向复杂分布中的样本$$x_0\sim p_\mathrm{complex}$$添加高斯噪声。这个加噪过程可以表示为$$q(\mathbf{x}_t|\mathbf{x}_{t-1})$$：  
+在DDPM中，将这个过程定义为**马尔可夫链**，通过不断地向复杂分布中的样本$$x_0\sim p_\mathrm{complex}$$添加高斯噪声。这个加噪过程可以表示为$$q(\mathbf{x}_t\vert\mathbf{x}_{t-1})$$：  
 $$  
 \begin{align}  
 q(\mathbf{x}_t \vert \mathbf{x}_{t-1}) &= \mathcal{N}(\mathbf{x}_t; \sqrt{1 - \beta_t} \mathbf{x}_{t-1}, \beta_t\mathbf{I})\\  
@@ -25,11 +25,11 @@ q(\mathbf{x}_t \vert \mathbf{x}_{t-1}) &= \mathcal{N}(\mathbf{x}_t; \sqrt{1 - \b
 \end{align}  
 $$  
 其中，$$\{\beta_t\in(0,1)\}^T_{t=1}$$，是超参数。  
-从$$\mathbf{x}_0$$开始，不断地应用$$q(\mathbf{x}_t|\mathbf{x}_{t-1})$$，经过足够大的$$T$$步加噪之后，最终得到纯噪声$$\mathbf{x}_T$$：  
+从$$\mathbf{x}_0$$开始，不断地应用$$q(\mathbf{x}_t\vert\mathbf{x}_{t-1})$$，经过足够大的$$T$$步加噪之后，最终得到纯噪声$$\mathbf{x}_T$$：  
 $$  
 \mathbf{x}_0\sim p_\mathrm{complex}\rightarrow \mathbf{x}_1\rightarrow \cdots \mathbf{x}_t\rightarrow\cdots\rightarrow \mathbf{x}_T\sim p_\mathrm{prior}  
 $$  
-除了迭代地使用$$q(\mathbf{x}_t|\mathbf{x}_{t-1})$$外，还可以使用$$q(\mathbf{x}_t|\mathbf{x}_0) = \mathcal{N}(\mathbf{x}_t; \sqrt{\bar{\alpha}_t} \mathbf{x}_0, (1 - \bar{\alpha}_t)\mathbf{I})$$一步到位，证明如下（两个高斯变量的线性组合仍然是高斯变量）：  
+除了迭代地使用$$q(\mathbf{x}_t\vert\mathbf{x}_{t-1})$$外，还可以使用$$q(\mathbf{x}_t\vert\mathbf{x}_0) = \mathcal{N}(\mathbf{x}_t; \sqrt{\bar{\alpha}_t} \mathbf{x}_0, (1 - \bar{\alpha}_t)\mathbf{I})$$一步到位，证明如下（两个高斯变量的线性组合仍然是高斯变量）：  
 $$  
 \begin{aligned}  
 \mathbf{x}_t   
@@ -45,22 +45,22 @@ $$
 $$  
 \mathbf{x}_0\sim p_\mathrm{complex}\rightarrow \mathbf{x}_1\rightarrow \cdots \mathbf{x}_t\rightarrow\cdots\rightarrow \mathbf{x}_T\sim p_\mathrm{prior}  
 $$  
-如果能够实现将前向扩散过程反转，也就实现了从简单分布到复杂分布的映射。逆向扩散过程则是将前向过程反转，实现从简单分布随机采样样本，迭代地使用$$q(\mathbf{x}_{t-1}|\mathbf{x}_t)$$，最终生成复杂分布的样本，即：  
+如果能够实现将前向扩散过程反转，也就实现了从简单分布到复杂分布的映射。逆向扩散过程则是将前向过程反转，实现从简单分布随机采样样本，迭代地使用$$q(\mathbf{x}_{t-1}\vert\mathbf{x}_t)$$，最终生成复杂分布的样本，即：  
 $$  
 \mathbf{x}_T\sim p_\mathrm{prior}\rightarrow \mathbf{x}_{T-1}\rightarrow \cdots \mathbf{x}_t\rightarrow\cdots\rightarrow \mathbf{x}_0\sim p_\mathrm{complex}  
 $$  
-为了求取$$q(\mathbf{x}_{t-1}|\mathbf{x}_t)$$，使用贝叶斯公式：  
+为了求取$$q(\mathbf{x}_{t-1}\vert\mathbf{x}_t)$$，使用贝叶斯公式：  
 $$  
 \begin{align}  
-q(\mathbf{x}_{t-1}|\mathbf{x}_t)&=\frac{q(\mathbf{x}_t|\mathbf{x}_{t-1})q(\mathbf{x}_{t-1})}{q(\mathbf{x}_t)}  
+q(\mathbf{x}_{t-1}\vert\mathbf{x}_t)&=\frac{q(\mathbf{x}_t\vert\mathbf{x}_{t-1})q(\mathbf{x}_{t-1})}{q(\mathbf{x}_t)}  
 \end{align}  
 $$  
-然而，公式中$$q(x_{t-1})$$和$$q(x_t)$$不好求，根据DDPM的马尔科夫假设，可以为$$q(\mathbf{x}_{t-1}|\mathbf{x}_t)$$添加条件（可以证明，如果向扩散过程中的$$\beta_t$$足够小，那么$$q(\mathbf{x}_{t-1}|\mathbf{x}_t)$$是高斯分布。）：  
+然而，公式中$$q(x_{t-1})$$和$$q(x_t)$$不好求，根据DDPM的马尔科夫假设，可以为$$q(\mathbf{x}_{t-1}\vert\mathbf{x}_t)$$添加条件（可以证明，如果向扩散过程中的$$\beta_t$$足够小，那么$$q(\mathbf{x}_{t-1}\vert\mathbf{x}_t)$$是高斯分布。）：  
 $$  
 \begin{align}  
-q(\mathbf{x}_{t-1}|\mathbf{x}_t)&=q(\mathbf{x}_{t-1}|\mathbf{x}_t,\mathbf{x}_0)\\  
-              &=\frac{q(\mathbf{x}_t|\mathbf{x}_{t-1},\mathbf{x}_0)q(\mathbf{x}_{t-1}|\mathbf{x}_0)}{q(\mathbf{x}_t|\mathbf{x}_0)}\\  
-              &=\frac{q(\mathbf{x}_t|\mathbf{x}_{t-1})q(\mathbf{x}_{t-1}|\mathbf{x}_0)}{q(\mathbf{x}_t|\mathbf{x}_0)}\\  
+q(\mathbf{x}_{t-1}\vert\mathbf{x}_t)&=q(\mathbf{x}_{t-1}\vert\mathbf{x}_t,\mathbf{x}_0)\\  
+              &=\frac{q(\mathbf{x}_t\vert\mathbf{x}_{t-1},\mathbf{x}_0)q(\mathbf{x}_{t-1}\vert\mathbf{x}_0)}{q(\mathbf{x}_t\vert\mathbf{x}_0)}\\  
+              &=\frac{q(\mathbf{x}_t\vert\mathbf{x}_{t-1})q(\mathbf{x}_{t-1}\vert\mathbf{x}_0)}{q(\mathbf{x}_t\vert\mathbf{x}_0)}\\  
               &=\mathcal{N}(\mathbf{x}_{t-1};\mu(\mathbf{x}_t;\theta),\sigma_t^2\mathbf I)  
 \end{align}  
 $$  
@@ -89,7 +89,7 @@ $$
 而在推理的时候，$$\boldsymbol\epsilon_t$$是未知的，所以使用神经网络进行预测。综上，逆向扩散过程：  
 $$  
 \begin{align}  
-q(\mathbf{x}_{t-1}|\mathbf{x}_t)&=\mathcal{N}(\mathbf{x}_{t-1};\mu(\mathbf{x}_t;\theta),\sigma_t^2\mathbf I)\\  
+q(\mathbf{x}_{t-1}\vert\mathbf{x}_t)&=\mathcal{N}(\mathbf{x}_{t-1};\mu(\mathbf{x}_t;\theta),\sigma_t^2\mathbf I)\\  
 &=\mathcal{N}\left(\mathbf x_{t-1};\frac{1}{\sqrt{\alpha_t}}\left(x_t-\frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\boldsymbol\epsilon_\theta(\mathbf x_t, t)\right),\left(\frac{1-\bar{\alpha}_{t-1}}{1-\bar{\alpha}_t}\cdot\beta_t\right)^2\mathbf I\right)\\  
 \mathbf x_{t-1}&=\frac{1}{\sqrt{\alpha_t}}\left(x_t-\frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\boldsymbol\epsilon_\theta(\mathbf x_t, t)\right)+\frac{1-\bar{\alpha}_{t-1}}{1-\bar{\alpha}_t}\beta_t\cdot\boldsymbol\epsilon\quad\boldsymbol\epsilon\sim\mathcal N(\mathbf 0, \mathbf I)  
 \end{align}  
@@ -98,32 +98,32 @@ $$
 DDPM的训练目标是最小化训练数据的负对数似然：  
 $$  
 \begin{align}  
--\log p_\theta(\mathbf x_0) &\le -\log p_\theta(\mathbf x_0) + \mathrm{KL}\left(q(\mathbf x_{1:T}|\mathbf x_0)\|p_\theta(\mathbf x_{1:T}|\mathbf x_0)\right) &\ ;\mathrm{KL}(\cdot\|\cdot)\ge 0\\  
-&=-\log p_\theta(\mathbf x_0)+\mathbb{E}_{\mathbf x_{1:T}\sim q(\mathbf x_{1:T}|\mathbf x_0)}\left[\log\frac{q(\mathbf x_{1:T}|\mathbf x_0)}{p_\theta(\mathbf x_{0:T})/p_\theta(\mathbf x_0)}\right]&\ ;p_\theta(\mathbf x_{1:T}|\mathbf x_0)=\frac{p_\theta(\mathbf x_{0:T})}{p_\theta(\mathbf x_0)}\\  
-&=-\log p_\theta(\mathbf x_0)+\mathbb{E}_{\mathbf x_{1:T}\sim q(\mathbf x_{1:T}|\mathbf x_0)}\left[\log\frac{q(\mathbf x_{1:T}|\mathbf x_0)}{p_\theta(\mathbf x_{0:T})}+\log p_\theta(\mathbf x_0)\right]\\  
-&=\mathbb{E}_{\mathbf x_{1:T}\sim q(\mathbf x_{1:T}|\mathbf x_0)}\left[\log\frac{q(\mathbf x_{1:T}|\mathbf x_0)}{p_\theta(\mathbf x_{0:T})}\right]\\  
+-\log p_\theta(\mathbf x_0) &\le -\log p_\theta(\mathbf x_0) + \mathrm{KL}\left(q(\mathbf x_{1:T}\vert\mathbf x_0)\Vertp_\theta(\mathbf x_{1:T}\vert\mathbf x_0)\right) &\ ;\mathrm{KL}(\cdot\Vert\cdot)\ge 0\\  
+&=-\log p_\theta(\mathbf x_0)+\mathbb{E}_{\mathbf x_{1:T}\sim q(\mathbf x_{1:T}\vert\mathbf x_0)}\left[\log\frac{q(\mathbf x_{1:T}\vert\mathbf x_0)}{p_\theta(\mathbf x_{0:T})/p_\theta(\mathbf x_0)}\right]&\ ;p_\theta(\mathbf x_{1:T}\vert\mathbf x_0)=\frac{p_\theta(\mathbf x_{0:T})}{p_\theta(\mathbf x_0)}\\  
+&=-\log p_\theta(\mathbf x_0)+\mathbb{E}_{\mathbf x_{1:T}\sim q(\mathbf x_{1:T}\vert\mathbf x_0)}\left[\log\frac{q(\mathbf x_{1:T}\vert\mathbf x_0)}{p_\theta(\mathbf x_{0:T})}+\log p_\theta(\mathbf x_0)\right]\\  
+&=\mathbb{E}_{\mathbf x_{1:T}\sim q(\mathbf x_{1:T}\vert\mathbf x_0)}\left[\log\frac{q(\mathbf x_{1:T}\vert\mathbf x_0)}{p_\theta(\mathbf x_{0:T})}\right]\\  
 \end{align}  
 $$  
-其中$$p_\theta(\mathbf x_{1:T}|\mathbf x_0)$$是使用网络估计分布$$q$$（变分推断），定义$$\mathcal{L}_{\mathrm{VLB}}\triangleq\mathbb{E}_q(\mathbf x_{0:T})\left[\log\frac{q(\mathbf x_{1:T}|\mathbf x_0)}{p_\theta(\mathbf x_{0:T})}\right]\ge-\mathbb{E}_{q(\mathbf x_0)}\log p_\theta(\mathbf x_0)$$，那么VLB是训练数据的负对数似然的上节，最小化VLB就是最小化负对数似然。继续对VLB拆分：  
+其中$$p_\theta(\mathbf x_{1:T}\vert\mathbf x_0)$$是使用网络估计分布$$q$$（变分推断），定义$$\mathcal{L}_{\mathrm{VLB}}\triangleq\mathbb{E}_q(\mathbf x_{0:T})\left[\log\frac{q(\mathbf x_{1:T}\vert\mathbf x_0)}{p_\theta(\mathbf x_{0:T})}\right]\ge-\mathbb{E}_{q(\mathbf x_0)}\log p_\theta(\mathbf x_0)$$，那么VLB是训练数据的负对数似然的上节，最小化VLB就是最小化负对数似然。继续对VLB拆分：  
 $$  
 \begin{align}  
-\mathcal{L}_{\mathrm{VLB}}&=\mathbb{E}_{q(\mathbf x_{0:T})}\left[\log\frac{q(\mathbf x_{1:T}|\mathbf x_0)}{p_\theta(\mathbf x_{0:T})}\right]\\  
-&=\mathbb{E}_q\left[\log\frac{\prod_{t=1}^{T}q(\mathbf x_t|\mathbf x_{t-1})}{p_\theta(\mathbf x_T)\prod_{t=1}^{T}p_\theta(\mathbf x_{t-1}|\mathbf x_t)}\right]\\  
-&=\mathbb{E}_q\left[-\log p_\theta(\mathbf x_T)+\sum\limits^{T}_{t=1}\log\frac{q(\mathbf x_t|\mathbf x_{t-1})}{p_\theta(\mathbf x_{t-1}|\mathbf x_t)}\right]\\  
-&=\mathbb{E}_q\left[-\log p_\theta(\mathbf x_T)+\sum\limits^{T}_{t=2}\log\frac{q(\mathbf x_t|\mathbf x_{t-1})}{p_\theta(\mathbf x_{t-1}|\mathbf x_t)}+\log\frac{q(\mathbf x_1|\mathbf x_0)}{p_\theta(\mathbf x_0|\mathbf x_1)}\right]\\  
-&=\mathbb{E}_q\left[-\log p_\theta(\mathbf x_T)+\sum\limits^{T}_{t=2}\log\frac{q(\mathbf x_t|\mathbf x_{t-1}, \mathbf x_0)}{p_\theta(\mathbf x_{t-1}|\mathbf x_t)}+\log\frac{q(\mathbf x_1|\mathbf x_0)}{p_\theta(\mathbf x_0|\mathbf x_1)}\right] &\ ;q(\mathbf x_t|\mathbf x_{t-1})=q(\mathbf x_t|\mathbf x_{t-1}, \mathbf x_0)\\  
-&=\mathbb{E}_q\left[-\log p_\theta(\mathbf x_T)+\sum\limits^{T}_{t=2}\log\left(\frac{q(\mathbf x_{t-1}|\mathbf x_{t}, \mathbf x_0)}{p_\theta(\mathbf x_{t-1}|\mathbf x_t)} \frac{q(\mathbf x_t|\mathbf x_0)}{q(\mathbf x_{t-1}|\mathbf x_0)}\right)+\log\frac{q(\mathbf x_1|\mathbf x_0)}{p_\theta(\mathbf x_0|\mathbf x_1)}\right] &\ ;\text{Bayes Theorem}\\  
-	&=\mathbb{E}_q\left[\log\frac{q(\mathbf x_T|\mathbf x_0)}{p_\theta(\mathbf x_T)}+\sum_{t=2}^{T}\log\frac{q(\mathbf x_{t-1}|\mathbf x_t, \mathbf x_0)}{p_\theta(\mathbf x_{t-1}|\mathbf x_t)}-\log p_\theta(\mathbf x_0|\mathbf x_1)\right]\\  
-&=\mathbb{E}_q\left[\underbrace{\mathrm{KL}(q(\mathbf x_T|\mathbf x_0) \| p_\theta(\mathbf x_T))}_{\mathcal{L}_T} + \sum_{t=2}^{T}\underbrace{\mathrm{KL}(q(\mathbf x_{t-1}|\mathbf x_t, \mathbf x_0) \| p_\theta(\mathbf x_{t-1}|\mathbf x_t))}_{\mathcal{L}_{t-1}}-\underbrace{\log p_\theta(\mathbf x_0|\mathbf x_1)}_{\mathcal{L}_0}\right]\\  
+\mathcal{L}_{\mathrm{VLB}}&=\mathbb{E}_{q(\mathbf x_{0:T})}\left[\log\frac{q(\mathbf x_{1:T}\vert\mathbf x_0)}{p_\theta(\mathbf x_{0:T})}\right]\\  
+&=\mathbb{E}_q\left[\log\frac{\prod_{t=1}^{T}q(\mathbf x_t\vert\mathbf x_{t-1})}{p_\theta(\mathbf x_T)\prod_{t=1}^{T}p_\theta(\mathbf x_{t-1}\vert\mathbf x_t)}\right]\\  
+&=\mathbb{E}_q\left[-\log p_\theta(\mathbf x_T)+\sum\limits^{T}_{t=1}\log\frac{q(\mathbf x_t\vert\mathbf x_{t-1})}{p_\theta(\mathbf x_{t-1}\vert\mathbf x_t)}\right]\\  
+&=\mathbb{E}_q\left[-\log p_\theta(\mathbf x_T)+\sum\limits^{T}_{t=2}\log\frac{q(\mathbf x_t\vert\mathbf x_{t-1})}{p_\theta(\mathbf x_{t-1}\vert\mathbf x_t)}+\log\frac{q(\mathbf x_1\vert\mathbf x_0)}{p_\theta(\mathbf x_0\vert\mathbf x_1)}\right]\\  
+&=\mathbb{E}_q\left[-\log p_\theta(\mathbf x_T)+\sum\limits^{T}_{t=2}\log\frac{q(\mathbf x_t\vert\mathbf x_{t-1}, \mathbf x_0)}{p_\theta(\mathbf x_{t-1}\vert\mathbf x_t)}+\log\frac{q(\mathbf x_1\vert\mathbf x_0)}{p_\theta(\mathbf x_0\vert\mathbf x_1)}\right] &\ ;q(\mathbf x_t\vert\mathbf x_{t-1})=q(\mathbf x_t\vert\mathbf x_{t-1}, \mathbf x_0)\\  
+&=\mathbb{E}_q\left[-\log p_\theta(\mathbf x_T)+\sum\limits^{T}_{t=2}\log\left(\frac{q(\mathbf x_{t-1}\vert\mathbf x_{t}, \mathbf x_0)}{p_\theta(\mathbf x_{t-1}\vert\mathbf x_t)} \frac{q(\mathbf x_t\vert\mathbf x_0)}{q(\mathbf x_{t-1}\vert\mathbf x_0)}\right)+\log\frac{q(\mathbf x_1\vert\mathbf x_0)}{p_\theta(\mathbf x_0\vert\mathbf x_1)}\right] &\ ;\text{Bayes Theorem}\\  
+	&=\mathbb{E}_q\left[\log\frac{q(\mathbf x_T\vert\mathbf x_0)}{p_\theta(\mathbf x_T)}+\sum_{t=2}^{T}\log\frac{q(\mathbf x_{t-1}\vert\mathbf x_t, \mathbf x_0)}{p_\theta(\mathbf x_{t-1}\vert\mathbf x_t)}-\log p_\theta(\mathbf x_0\vert\mathbf x_1)\right]\\  
+&=\mathbb{E}_q\left[\underbrace{\mathrm{KL}(q(\mathbf x_T\vert\mathbf x_0) \Vert p_\theta(\mathbf x_T))}_{\mathcal{L}_T} + \sum_{t=2}^{T}\underbrace{\mathrm{KL}(q(\mathbf x_{t-1}\vert\mathbf x_t, \mathbf x_0) \Vert p_\theta(\mathbf x_{t-1}\vert\mathbf x_t))}_{\mathcal{L}_{t-1}}-\underbrace{\log p_\theta(\mathbf x_0\vert\mathbf x_1)}_{\mathcal{L}_0}\right]\\  
 &=\mathbb{E}_q\left[\mathcal{L}_T+\sum_{t=2}^{T}\mathcal{L}_{t-1}-\mathcal{L}_0\right]  
 \end{align}  
 $$  
 1. 由于$$\mathbf x_T$$是纯噪声，所以$$\mathcal{L}_T$$是常数  
-2. 对于$$\mathcal{L}_0$$，DDPM专门设计了特殊的$$p_\theta(\mathbf x_0|\mathbf x_1)$$  
-3. 对于$$\mathcal{L}_t\triangleq\mathrm{KL}(q(\mathbf x_t\vert\mathbf x_{t+1}, \mathbf x_0) \| p_\theta(\mathbf x_t \vert \mathbf x_{t+1})) \quad 1\le t \le T-1$$，是两个正态分布的KL散度，有解析解。在DDPM中，使用了简化之后的损失函数：  
+2. 对于$$\mathcal{L}_0$$，DDPM专门设计了特殊的$$p_\theta(\mathbf x_0\vert\mathbf x_1)$$  
+3. 对于$$\mathcal{L}_t\triangleq\mathrm{KL}(q(\mathbf x_t\vert\mathbf x_{t+1}, \mathbf x_0) \Vert p_\theta(\mathbf x_t \vert \mathbf x_{t+1})) \quad 1\le t \le T-1$$，是两个正态分布的KL散度，有解析解。在DDPM中，使用了简化之后的损失函数：  
 $$  
 \begin{align}  
-\mathcal{L}_t^{\mathrm{simple}}&=\mathbb{E}_{t\sim[1,T],\mathbf x_0,\boldsymbol\epsilon_t}\left[\|\boldsymbol\epsilon_t-\boldsymbol\epsilon_\theta(\sqrt{\bar{\alpha}_t}\mathbf x_0+\sqrt{1-\bar{\alpha}_t}\boldsymbol\epsilon_t,t)\|^2_2\right]  
+\mathcal{L}_t^{\mathrm{simple}}&=\mathbb{E}_{t\sim[1,T],\mathbf x_0,\boldsymbol\epsilon_t}\left[\Vert\boldsymbol\epsilon_t-\boldsymbol\epsilon_\theta(\sqrt{\bar{\alpha}_t}\mathbf x_0+\sqrt{1-\bar{\alpha}_t}\boldsymbol\epsilon_t,t)\Vert^2_2\right]  
 \end{align}  
 $$  
 ### 总结  
@@ -190,7 +190,7 @@ $$
   
 基于score的生成模型和扩散模型非常相似，使用了score matching和Langevin dynamics技术进行生成。其中，  
 1. score  matching是估计目标分布的概率密度的梯度 （即score，分数），记$$p(x)$$是数据分布的概率密度函数，则这个分布的score被定义为$$\nabla_x\log p(x)$$，score matching则是训练一个网络$$s_\theta$$去近似score：  
-$$\mathcal{E}_{p(x)}\left[ \|\nabla_x\log p(x)-s_\theta(x)\|^2_2 \right]=\int p(x)\|\nabla_x\log p(x)-s_\theta(x)\|^2_2 dx$$  
+$$\mathcal{E}_{p(x)}\left[ \Vert\nabla_x\log p(x)-s_\theta(x)\Vert^2_2 \right]=\int p(x)\Vert\nabla_x\log p(x)-s_\theta(x)\Vert^2_2 dx$$  
 3. Langevin dynamics是使用score采样生成数据，采样方式如下：  
 $$  
 x_t=x_{t-1}+\frac{\delta}{2}\nabla_x\log p(x_{t-1})+\sqrt{\delta}\epsilon, \text{    where } \epsilon\sim\mathcal{N}(0, I)  
@@ -200,7 +200,7 @@ $$
 1. Diffusion阶段  
 $$  
 \begin{align}  
-q(x_t|x_0)&=\boxed{\mathcal{N}(x_t;\sqrt{\bar{\alpha}_t}x_0,(1-\bar{\alpha}_t)I)}\\  
+q(x_t\vertx_0)&=\boxed{\mathcal{N}(x_t;\sqrt{\bar{\alpha}_t}x_0,(1-\bar{\alpha}_t)I)}\\  
          &=\sqrt{\bar{\alpha}_t}x_0+\sqrt{1-\bar{\alpha}_t}\epsilon  
          \text{ ,where } \epsilon\sim\mathcal{N}(0,I)  
 \end{align}  
@@ -210,15 +210,15 @@ $$
 使用贝叶斯公式  
 $$  
 \begin{align}  
-q(x_{t-1}|x_t)&=\frac{q(x_t|x_{t-1})q(x_{t-1})}{q(x_t)}  
+q(x_{t-1}\vert x_t)&=\frac{q(x_t\vert x_{t-1})q(x_{t-1})}{q(x_t)}  
 \end{align}  
 $$  
 发现公式中$$q(x_{t-1})$$和$$q(x_t)$$不好求，根据DDPM的马尔科夫假设：  
 $$  
 \begin{align}  
-q(x_{t-1}|x_t)&=q(x_{t-1}|x_t,x_0)\\  
-              &=\frac{q(x_t|x_{t-1},x_0)q(x_{t-1}|x_0)}{q(x_t|x_0)}\\  
-              &=\frac{q(x_t|x_{t-1})q(x_{t-1}|x_0)}{q(x_t|x_0)}\\  
+q(x_{t-1}\vert x_t)&=q(x_{t-1}\vert x_t,x_0)\\  
+              &=\frac{q(x_t\vert x_{t-1},x_0)q(x_{t-1}\vert x_0)}{q(x_t\vert x_0)}\\  
+              &=\frac{q(x_t\vert x_{t-1})q(x_{t-1}\vert x_0)}{q(x_t\vert x_0)}\\  
               &=\boxed{\mathcal{N}(x_{t-1};\mu(x_t;\theta),\sigma_t^2I)}  
 \end{align}  
 $$  
@@ -228,19 +228,19 @@ $$
 \mu(x_t;\theta)&=\frac{\sqrt{\alpha_t}(1-\bar{\alpha}_{t-1})}{1-\bar{\alpha}_t}x_t+  
 \frac{\sqrt{\bar{x}_{t-1}}\beta_t}{1-\bar{\alpha}_t}x_0\\  
 &=\boxed{\frac{\sqrt{\alpha_t}(1-\bar{\alpha}_{t-1})}{1-\bar{\alpha}_t}x_t+  
-\frac{\sqrt{\bar{x}_{t-1}}\beta_t}{1-\bar{\alpha}_t}\hat{x}_{0|t}}\\  
+\frac{\sqrt{\bar{x}_{t-1}}\beta_t}{1-\bar{\alpha}_t}\hat{x}_{0\vertt}}\\  
 \sigma_t^2&=\boxed{\frac{1-\bar{\alpha}_{t-1}}{1-\bar{\alpha}_t}\cdot\beta_t}  
 \end{align}  
 $$  
 ### From DDPM to DDIM  
   
-同样是对分布$$q(x_{t-1}|x_t,x_0)$$进行求解：  
+同样是对分布$$q(x_{t-1}\vertx_t,x_0)$$进行求解：  
 $$  
 \begin{align}  
-q(x_{t-1}|x_t,x_0)  
+q(x_{t-1}\vertx_t,x_0)  
 &=\sqrt{\bar{\alpha}_{t-1}}x_0+\sqrt{1-\bar{\alpha}_{t-1}}\epsilon\\  
 &=\sqrt{\bar{\alpha}_{t-1}}  
-\hat{x}_{0|t}  
+\hat{x}_{0\vertt}  
 +\sqrt{1-\bar{\alpha}_{t-1}}\epsilon  
 \text{ ,where }\epsilon\sim\mathcal{N}(0,I)  
 \end{align}  
@@ -248,28 +248,28 @@ $$
 在上式中，$$\epsilon$$是一个噪声，虽然可以重新从高斯分布采样，但是也可以使用噪声估计网络估计出来的结果$$\epsilon_\theta(x_t,t)$$：  
 $$  
 \begin{align}  
-q(x_{t-1}|x_t,x_0)  
+q(x_{t-1}\vertx_t,x_0)  
 &=\sqrt{\bar{\alpha}_{t-1}}x_0+\sqrt{1-\bar{\alpha}_{t-1}}\epsilon\\  
 &=\sqrt{\bar{\alpha}_{t-1}}  
-\hat{x}_{0|t}  
+\hat{x}_{0\vertt}  
 +\sqrt{1-\bar{\alpha}_{t-1}}\epsilon  
 \text{ ,where }\epsilon\sim\mathcal{N}(0,I)\\  
 &=\sqrt{\bar{\alpha}_{t-1}}  
-\hat{x}_{0|t}  
+\hat{x}_{0\vertt}  
 +\sqrt{1-\bar{\alpha}_{t-1}}\epsilon_\theta(x_t,t)\\  
 \end{align}  
 $$  
 甚至可以同时考虑$$\epsilon$$和$$\epsilon_\theta(x_t,t)$$：  
 $$  
 \begin{align}  
-q(x_{t-1}|x_t,x_0)  
+q(x_{t-1}\vertx_t,x_0)  
 &=\sqrt{\bar{\alpha}_{t-1}}x_0+\sqrt{1-\bar{\alpha}_{t-1}}\epsilon\\  
 &=\sqrt{\bar{\alpha}_{t-1}}  
-\hat{x}_{0|t}  
+\hat{x}_{0\vertt}  
 +\sqrt{1-\bar{\alpha}_{t-1}}\epsilon  
 \text{ ,where }\epsilon\sim\mathcal{N}(0,I)\\  
 &=\sqrt{\bar{\alpha}_{t-1}}  
-\hat{x}_{0|t}  
+\hat{x}_{0\vertt}  
 +\sqrt{1-\bar{\alpha}_{t-1}}\epsilon_\theta(x_t,t)\\  
 \end{align}  
 $$  
@@ -278,9 +278,9 @@ $$
 超分，训练数据是LR和SR配对的图片，以LR图片作为condition，生成SR图片  
 ## CDM  
 超分，级联的方式对小图进行超分，采用的方法就是SR3  
-{% include figure.html path="assets/img/Pasted image 20230927200225.png"%}  
+![[Pasted image 20230927200225.png\vert725|Pasted image 20230927200225.png\vert725]]  
 ## SDEdit  
-{% include figure.html path="assets/img/Pasted image 20230927200246.png"%}  
+![[Pasted image 20230927200246.png\vert900|Pasted image 20230927200246.png\vert900]]  
 由于加噪过程是首先破坏高频信息，然后才破坏低频信息，所以加噪到一定程度之后，就就可以去掉不想要的细节纹理，但仍保留大体结构，于是生成出来的图像就既能遵循输入的引导，又显得真实。但是需要 realism-faithfulness trade-off  
 ## ILVR  
 给定一个参考图像$$y$$，通过调整DDPM去噪过程，希望让模型生成的图像接近参考图像，作者定义的接近是让模型能够满足  
@@ -288,7 +288,7 @@ $$
 \phi_N(x_t)=\phi_N(y_t)  
 $$  
 $$\phi_N(\cdot)$$是一个低通滤波器（下采样之后再插值回来）。使用如下的算法：  
-{% include figure.html path="assets/img/Pasted image 20230927201110.png"%}  
+![[Pasted image 20230927201110.png\vert450|Pasted image 20230927201110.png\vert450]]  
 即，对DDPM预测的$$x'_{t-1}$$加上bias：$$\phi_N(y_{t-1})-\phi_N(x'_{t-1})$$，可以证明，如果上/下采样采用的是最近邻插值，使用这种方法可以使得$$\phi_N(x_t)=\phi_N(y_t)$$.  
 这种方法和classifier guidance很相似，甚至不需要训练一个外部模型，对算力友好。  
 ## DiffusionCLIP  

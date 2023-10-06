@@ -4,17 +4,20 @@ title: Diffusion Models
 date: 2023-10-04 15:09:00  
 description: introduction about diffusion models  
 tags:  
-  - diffusion-models  
+  - diffusion-model  
+toc:  
+  sidebar: left  
+giscus_comments: "true"  
 ---  
 2023  年扩散模型还有什么可做的方向？ - 谷粒多·凯特的回答 - 知乎 https://www.zhihu.com/question/568791838/answer/3195773725  
-# 1 原理篇   
-## 1.1  DDPM   
-### 1.1.1 前向扩散  
+# 原理篇   
+## DDPM   
+### 前向扩散  
 前向扩散指的是将一个复杂分布转换成简单分布的过程$$\mathcal{T}:\mathbb{R}^d\mapsto\mathbb{R}^d$$，即：  
 $$  
 \mathbf{x}_0\sim p_\mathrm{complex}\Longrightarrow \mathcal{T}(\mathbf{x}_0)\sim p_\mathrm{prior}  
 $$  
-在DDPM中，将这个过程定义为**马尔科夫链**，通过不断地向复杂分布中的样本$$x_0\sim p_\mathrm{complex}$$添加高斯噪声。这个加噪过程可以表示为$$q(\mathbf{x}_t|\mathbf{x}_{t-1})$$：  
+在DDPM中，将这个过程定义为**马尔可夫链**，通过不断地向复杂分布中的样本$$x_0\sim p_\mathrm{complex}$$添加高斯噪声。这个加噪过程可以表示为$$q(\mathbf{x}_t|\mathbf{x}_{t-1})$$：  
 $$  
 \begin{align}  
 q(\mathbf{x}_t \vert \mathbf{x}_{t-1}) &= \mathcal{N}(\mathbf{x}_t; \sqrt{1 - \beta_t} \mathbf{x}_{t-1}, \beta_t\mathbf{I})\\  
@@ -37,7 +40,7 @@ $$
 \end{aligned}  
 $$  
 一般来说，超参数$$\beta_t$$的设置满足$$0<\beta_1<\cdots<\beta_T<1$$，则$$\bar{\alpha}_1 > \cdots > \bar{\alpha}_T\to1$$，则$$\mathbf{x}_T$$会只保留纯噪声部分。  
-### 1.1.2 逆向扩散  
+### 逆向扩散  
 在前向扩散过程中，实现了：  
 $$  
 \mathbf{x}_0\sim p_\mathrm{complex}\rightarrow \mathbf{x}_1\rightarrow \cdots \mathbf{x}_t\rightarrow\cdots\rightarrow \mathbf{x}_T\sim p_\mathrm{prior}  
@@ -91,7 +94,7 @@ q(\mathbf{x}_{t-1}|\mathbf{x}_t)&=\mathcal{N}(\mathbf{x}_{t-1};\mu(\mathbf{x}_t;
 \mathbf x_{t-1}&=\frac{1}{\sqrt{\alpha_t}}\left(x_t-\frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\boldsymbol\epsilon_\theta(\mathbf x_t, t)\right)+\frac{1-\bar{\alpha}_{t-1}}{1-\bar{\alpha}_t}\beta_t\cdot\boldsymbol\epsilon\quad\boldsymbol\epsilon\sim\mathcal N(\mathbf 0, \mathbf I)  
 \end{align}  
 $$  
-### 1.1.3 模型训练  
+### 模型训练  
 DDPM的训练目标是最小化训练数据的负对数似然：  
 $$  
 \begin{align}  
@@ -117,24 +120,24 @@ $$
 $$  
 1. 由于$$\mathbf x_T$$是纯噪声，所以$$\mathcal{L}_T$$是常数  
 2. 对于$$\mathcal{L}_0$$，DDPM专门设计了特殊的$$p_\theta(\mathbf x_0|\mathbf x_1)$$  
-3. 对于$$\mathcal{L}_t\triangleq\mathrm{KL}(q(\mathbf x_t|\mathbf x_{t+1}, \mathbf x_0) \| p_\theta(\mathbf x_t | \mathbf x_{t+1})) \quad 1\le t \le T-1$$，是两个正态分布的KL散度，有解析解。在DDPM中，使用了简化之后的损失函数：  
+3. 对于$$\mathcal{L}_t\triangleq\mathrm{KL}(q(\mathbf x_t\vert\mathbf x_{t+1}, \mathbf x_0) \| p_\theta(\mathbf x_t \vert \mathbf x_{t+1})) \quad 1\le t \le T-1$$，是两个正态分布的KL散度，有解析解。在DDPM中，使用了简化之后的损失函数：  
 $$  
 \begin{align}  
 \mathcal{L}_t^{\mathrm{simple}}&=\mathbb{E}_{t\sim[1,T],\mathbf x_0,\boldsymbol\epsilon_t}\left[\|\boldsymbol\epsilon_t-\boldsymbol\epsilon_\theta(\sqrt{\bar{\alpha}_t}\mathbf x_0+\sqrt{1-\bar{\alpha}_t}\boldsymbol\epsilon_t,t)\|^2_2\right]  
 \end{align}  
 $$  
-### 1.1.4 总结  
+### 总结  
 综上，DDPM的训练和采样/推理过程如下图所示：  
 ![[Pasted image 20231002142935.png|Pasted image 20231002142935.png]]  
-## 1.2 基于score的生成模型  
-### 1.2.1 引言  
+## 基于score的生成模型  
+### 引言  
 score-based生成模型是一种新的生成模型范式，在score-based之前，主要存在两种类型的生成模型：  
 1. **基于似然的生成模型**：基于最大似然估计（MLE），使得从真实数据分布中采样出的数据能够在所建模的数据分布中概率最大化，即$$\max_\theta \mathbb{E}_{x\sim p_\mathrm{data}(x)}\left[\log p(x;\theta)\right]$$。这类模型通过最大化似然函数，直接学习数据集的分布，主要方法有VAE、流模型、能量模型  
 2. **隐式生成模型**：非直接学习数据集的分布，主要方法有GAN  
 它们分别具有以下限制：  
 1. **对于基于似然的生成模型**：对神经网络的结构要求高  
 2. **对于隐式生成模型**：训练不稳定、容易导致模式坍塌  
-### 1.2.2 先验知识  
+### 先验知识  
 score-based生成模型就能很好地避免这些限制，在介绍score-based生成模型之前，需要明确几个概念：  
 1. **能量函数**  
 对于大多数分布，可以使用概率密度函数（PDF）进行描述，也可以使用能量函数进行描述：  
@@ -168,7 +171,7 @@ $$
 TODO  
 7. **基于MCMC的MLE方法**  
 TODO  
-### 1.2.3 score-based模型的解决方案  
+### score-based模型的解决方案  
 对于一个基于能量函数的概率分布：  
 $$  
 p_\theta(x)=\frac{e^{-E_\theta(x)}}{Z_\theta}  
@@ -192,8 +195,8 @@ $$\mathcal{E}_{p(x)}\left[ \|\nabla_x\log p(x)-s_\theta(x)\|^2_2 \right]=\int p(
 $$  
 x_t=x_{t-1}+\frac{\delta}{2}\nabla_x\log p(x_{t-1})+\sqrt{\delta}\epsilon, \text{    where } \epsilon\sim\mathcal{N}(0, I)  
 $$  
-## 1.3 DDIM  
-#### 1.3.1.1 Review of DDPM  
+## DDIM  
+#### Review of DDPM  
 1. Diffusion阶段  
 $$  
 \begin{align}  
@@ -229,7 +232,7 @@ $$
 \sigma_t^2&=\boxed{\frac{1-\bar{\alpha}_{t-1}}{1-\bar{\alpha}_t}\cdot\beta_t}  
 \end{align}  
 $$  
-### 1.3.2 From DDPM to DDIM  
+### From DDPM to DDIM  
   
 同样是对分布$$q(x_{t-1}|x_t,x_0)$$进行求解：  
 $$  
@@ -270,16 +273,16 @@ q(x_{t-1}|x_t,x_0)
 +\sqrt{1-\bar{\alpha}_{t-1}}\epsilon_\theta(x_t,t)\\  
 \end{align}  
 $$  
-# 2 应用篇  
-## 2.1 SR3  
+# 应用篇  
+## SR3  
 超分，训练数据是LR和SR配对的图片，以LR图片作为condition，生成SR图片  
-## 2.2 CDM  
+## CDM  
 超分，级联的方式对小图进行超分，采用的方法就是SR3  
 {% include figure.html path="assets/img/Pasted image 20230927200225.png"%}  
-## 2.3 SDEdit  
+## SDEdit  
 {% include figure.html path="assets/img/Pasted image 20230927200246.png"%}  
 由于加噪过程是首先破坏高频信息，然后才破坏低频信息，所以加噪到一定程度之后，就就可以去掉不想要的细节纹理，但仍保留大体结构，于是生成出来的图像就既能遵循输入的引导，又显得真实。但是需要 realism-faithfulness trade-off  
-## 2.4 ILVR  
+## ILVR  
 给定一个参考图像$$y$$，通过调整DDPM去噪过程，希望让模型生成的图像接近参考图像，作者定义的接近是让模型能够满足  
 $$  
 \phi_N(x_t)=\phi_N(y_t)  
@@ -288,10 +291,10 @@ $$\phi_N(\cdot)$$是一个低通滤波器（下采样之后再插值回来）。
 {% include figure.html path="assets/img/Pasted image 20230927201110.png"%}  
 即，对DDPM预测的$$x'_{t-1}$$加上bias：$$\phi_N(y_{t-1})-\phi_N(x'_{t-1})$$，可以证明，如果上/下采样采用的是最近邻插值，使用这种方法可以使得$$\phi_N(x_t)=\phi_N(y_t)$$.  
 这种方法和classifier guidance很相似，甚至不需要训练一个外部模型，对算力友好。  
-## 2.5 DiffusionCLIP  
+## DiffusionCLIP  
 基于扩散模型的图像编辑，使用到的技术有DDIM Inversion，CLIP  
 TODO  
-# 3 参考  
+# 参考  
 1. [从零开始了解Diffusion Models](https://www.bilibili.com/video/BV13P411J7dm)  
 2. [https://ayandas.me/blog-tut/2021/12/04/diffusion-prob-models.html](https://ayandas.me/blog-tut/2021/12/04/diffusion-prob-models.html)  
 3. [What are Diffusion Models](https://lilianweng.github.io/posts/2021-07-11-diffusion-models/)  

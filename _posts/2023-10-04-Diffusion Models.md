@@ -98,7 +98,7 @@ $$
 DDPM的训练目标是最小化训练数据的负对数似然：  
 $$  
 \begin{align}  
--\log p_\theta(\mathbf x_0) &\le -\log p_\theta(\mathbf x_0) + \mathrm{KL}\left(q(\mathbf x_{1:T}\vert\mathbf x_0)\Vertp_\theta(\mathbf x_{1:T}\vert\mathbf x_0)\right) &\ ;\mathrm{KL}(\cdot\Vert\cdot)\ge 0\\  
+-\log p_\theta(\mathbf x_0) &\le -\log p_\theta(\mathbf x_0) + \mathrm{KL}\left(q(\mathbf x_{1:T}\vert\mathbf x_0)\Vert p_\theta(\mathbf x_{1:T}\vert\mathbf x_0)\right) &\ ;\mathrm{KL}(\cdot\Vert\cdot)\ge 0\\  
 &=-\log p_\theta(\mathbf x_0)+\mathbb{E}_{\mathbf x_{1:T}\sim q(\mathbf x_{1:T}\vert\mathbf x_0)}\left[\log\frac{q(\mathbf x_{1:T}\vert\mathbf x_0)}{p_\theta(\mathbf x_{0:T})/p_\theta(\mathbf x_0)}\right]&\ ;p_\theta(\mathbf x_{1:T}\vert\mathbf x_0)=\frac{p_\theta(\mathbf x_{0:T})}{p_\theta(\mathbf x_0)}\\  
 &=-\log p_\theta(\mathbf x_0)+\mathbb{E}_{\mathbf x_{1:T}\sim q(\mathbf x_{1:T}\vert\mathbf x_0)}\left[\log\frac{q(\mathbf x_{1:T}\vert\mathbf x_0)}{p_\theta(\mathbf x_{0:T})}+\log p_\theta(\mathbf x_0)\right]\\  
 &=\mathbb{E}_{\mathbf x_{1:T}\sim q(\mathbf x_{1:T}\vert\mathbf x_0)}\left[\log\frac{q(\mathbf x_{1:T}\vert\mathbf x_0)}{p_\theta(\mathbf x_{0:T})}\right]\\  
@@ -200,7 +200,7 @@ $$
 1. Diffusion阶段  
 $$  
 \begin{align}  
-q(x_t\vertx_0)&=\boxed{\mathcal{N}(x_t;\sqrt{\bar{\alpha}_t}x_0,(1-\bar{\alpha}_t)I)}\\  
+q(x_t\vert x_0)&=\boxed{\mathcal{N}(x_t;\sqrt{\bar{\alpha}_t}x_0,(1-\bar{\alpha}_t)I)}\\  
          &=\sqrt{\bar{\alpha}_t}x_0+\sqrt{1-\bar{\alpha}_t}\epsilon  
          \text{ ,where } \epsilon\sim\mathcal{N}(0,I)  
 \end{align}  
@@ -228,19 +228,19 @@ $$
 \mu(x_t;\theta)&=\frac{\sqrt{\alpha_t}(1-\bar{\alpha}_{t-1})}{1-\bar{\alpha}_t}x_t+  
 \frac{\sqrt{\bar{x}_{t-1}}\beta_t}{1-\bar{\alpha}_t}x_0\\  
 &=\boxed{\frac{\sqrt{\alpha_t}(1-\bar{\alpha}_{t-1})}{1-\bar{\alpha}_t}x_t+  
-\frac{\sqrt{\bar{x}_{t-1}}\beta_t}{1-\bar{\alpha}_t}\hat{x}_{0\vertt}}\\  
+\frac{\sqrt{\bar{x}_{t-1}}\beta_t}{1-\bar{\alpha}_t}\hat{x}_{0\vert t}}\\  
 \sigma_t^2&=\boxed{\frac{1-\bar{\alpha}_{t-1}}{1-\bar{\alpha}_t}\cdot\beta_t}  
 \end{align}  
 $$  
 ### From DDPM to DDIM  
   
-同样是对分布$$q(x_{t-1}\vertx_t,x_0)$$进行求解：  
+同样是对分布$$q(x_{t-1}\vert x_t,x_0)$$进行求解：  
 $$  
 \begin{align}  
-q(x_{t-1}\vertx_t,x_0)  
+q(x_{t-1}\vert x_t,x_0)  
 &=\sqrt{\bar{\alpha}_{t-1}}x_0+\sqrt{1-\bar{\alpha}_{t-1}}\epsilon\\  
 &=\sqrt{\bar{\alpha}_{t-1}}  
-\hat{x}_{0\vertt}  
+\hat{x}_{0\vert t}  
 +\sqrt{1-\bar{\alpha}_{t-1}}\epsilon  
 \text{ ,where }\epsilon\sim\mathcal{N}(0,I)  
 \end{align}  
@@ -248,28 +248,28 @@ $$
 在上式中，$$\epsilon$$是一个噪声，虽然可以重新从高斯分布采样，但是也可以使用噪声估计网络估计出来的结果$$\epsilon_\theta(x_t,t)$$：  
 $$  
 \begin{align}  
-q(x_{t-1}\vertx_t,x_0)  
+q(x_{t-1}\vert x_t,x_0)  
 &=\sqrt{\bar{\alpha}_{t-1}}x_0+\sqrt{1-\bar{\alpha}_{t-1}}\epsilon\\  
 &=\sqrt{\bar{\alpha}_{t-1}}  
-\hat{x}_{0\vertt}  
+\hat{x}_{0\vert t}  
 +\sqrt{1-\bar{\alpha}_{t-1}}\epsilon  
 \text{ ,where }\epsilon\sim\mathcal{N}(0,I)\\  
 &=\sqrt{\bar{\alpha}_{t-1}}  
-\hat{x}_{0\vertt}  
+\hat{x}_{0\vert t}  
 +\sqrt{1-\bar{\alpha}_{t-1}}\epsilon_\theta(x_t,t)\\  
 \end{align}  
 $$  
 甚至可以同时考虑$$\epsilon$$和$$\epsilon_\theta(x_t,t)$$：  
 $$  
 \begin{align}  
-q(x_{t-1}\vertx_t,x_0)  
+q(x_{t-1}\vert x_t,x_0)  
 &=\sqrt{\bar{\alpha}_{t-1}}x_0+\sqrt{1-\bar{\alpha}_{t-1}}\epsilon\\  
 &=\sqrt{\bar{\alpha}_{t-1}}  
-\hat{x}_{0\vertt}  
+\hat{x}_{0\vert t}  
 +\sqrt{1-\bar{\alpha}_{t-1}}\epsilon  
 \text{ ,where }\epsilon\sim\mathcal{N}(0,I)\\  
 &=\sqrt{\bar{\alpha}_{t-1}}  
-\hat{x}_{0\vertt}  
+\hat{x}_{0\vert t}  
 +\sqrt{1-\bar{\alpha}_{t-1}}\epsilon_\theta(x_t,t)\\  
 \end{align}  
 $$  
@@ -278,9 +278,9 @@ $$
 超分，训练数据是LR和SR配对的图片，以LR图片作为condition，生成SR图片  
 ## CDM  
 超分，级联的方式对小图进行超分，采用的方法就是SR3  
-![[Pasted image 20230927200225.png\vert725|Pasted image 20230927200225.png\vert725]]  
+{% include figure.html path="assets/img/Pasted image 20230927200225.png" width="100%" %}  
 ## SDEdit  
-![[Pasted image 20230927200246.png\vert900|Pasted image 20230927200246.png\vert900]]  
+{% include figure.html path="assets/img/Pasted image 20230927200246.png" width="100%" %}  
 由于加噪过程是首先破坏高频信息，然后才破坏低频信息，所以加噪到一定程度之后，就就可以去掉不想要的细节纹理，但仍保留大体结构，于是生成出来的图像就既能遵循输入的引导，又显得真实。但是需要 realism-faithfulness trade-off  
 ## ILVR  
 给定一个参考图像$$y$$，通过调整DDPM去噪过程，希望让模型生成的图像接近参考图像，作者定义的接近是让模型能够满足  
@@ -288,7 +288,7 @@ $$
 \phi_N(x_t)=\phi_N(y_t)  
 $$  
 $$\phi_N(\cdot)$$是一个低通滤波器（下采样之后再插值回来）。使用如下的算法：  
-![[Pasted image 20230927201110.png\vert450|Pasted image 20230927201110.png\vert450]]  
+{% include figure.html path="assets/img/Pasted image 20230927201110.png" width="100%" %}  
 即，对DDPM预测的$$x'_{t-1}$$加上bias：$$\phi_N(y_{t-1})-\phi_N(x'_{t-1})$$，可以证明，如果上/下采样采用的是最近邻插值，使用这种方法可以使得$$\phi_N(x_t)=\phi_N(y_t)$$.  
 这种方法和classifier guidance很相似，甚至不需要训练一个外部模型，对算力友好。  
 ## DiffusionCLIP  

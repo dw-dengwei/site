@@ -14,12 +14,13 @@ authors:
       name: nil  
 toc:  
   - name: 22-10-06_Watson_Novel View Synthesis with Diffusion Models  
-  - name: 22-12-06_Deng_NeRDi: Single-View NeRF Synthesis with Language-Guided Diffusion as General Image Priors  
-  - name: 23-02-15_Zhou_SparseFusion: Distilling View-conditioned Diffusion for 3D Reconstruction  
-  - name: 23-02-20_Gu_NerfDiff: Single-image View Synthesis with NeRF-guided Distillation from 3D-aware Diffusion  
-  - name: 23-03-17_Lei_RGBD2: Generative Scene Synthesis via Incremental View Inpainting using RGBD Diffusion Models  
-  - name: 23-03-20_Liu_Zero-1-to-3: Zero-shot One Image to 3D Object  
-  - name: 23-03-30_Tseng_Consistent View Synthesis with Pose-Guided Diffusion Models- name: 23-03-31_Xiang_3D-aware Image Generation using 2D Diffusion Models  
+  - name: 22-12-06_Deng_NeRDi_Single-View NeRF Synthesis with Language-Guided Diffusion as General Image Priors  
+  - name: 23-02-15_Zhou_SparseFusion_Distilling View-conditioned Diffusion for 3D Reconstruction  
+  - name: 23-02-20_Gu_NerfDiff_Single-image View Synthesis with NeRF-guided Distillation from 3D-aware Diffusion  
+  - name: 23-03-17_Lei_RGBD2_Generative Scene Synthesis via Incremental View Inpainting using RGBD Diffusion Models  
+  - name: 23-03-20_Liu_Zero-1-to-3_Zero-shot One Image to 3D Object  
+  - name: 23-03-30_Tseng_Consistent View Synthesis with Pose-Guided Diffusion Models  
+  - name: 23-03-31_Xiang_3D-aware Image Generation using 2D Diffusion Models  
   - name: 23-04-05_Chan_Generative Novel View Synthesis with 3D-Aware Diffusion Models  
 ---  
 # 22-10-06_Watson_Novel View Synthesis with Diffusion Models  

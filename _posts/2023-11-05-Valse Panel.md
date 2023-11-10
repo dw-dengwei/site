@@ -12,9 +12,9 @@ authors:
     affiliations:  
       name: nil  
 ---  
-> From: https://pub.towardsai.net/diffusion-models-vs-gans-vs-vaes-comparison-of-deep-generative-models-67ab93e0d9ae  
----  
+  
 https://www.bilibili.com/video/BV1pL4y1W7pT  
+  
 ---  
 # 做科研需要培养的能力或习惯是什么？  
 > 山世光：  

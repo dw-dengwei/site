@@ -29,4 +29,4 @@ toc:
 - VAE = Encoder + Decoder  
 - Training by maximizing log-likelihood.  
   
-{% include figure.html path="assets/img/../assets/img/Pasted image 20231029144619.png" width="100%" %}
+{% include figure.html path="assets/img/Pasted image 20231029144619.png" width="100%" %}

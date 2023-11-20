@@ -134,7 +134,7 @@ $$
 $$  
 # Summary  
 综上，DDPM的训练和采样/推理过程如下图所示：  
-{% include figure.html path="assets/img/../assets/img/Pasted image 20231002142935.png" width="100%" %}  
+{% include figure.html path="assets/img/Pasted image 20231002142935.png" width="100%" %}  
 # Reference  
 1. [从零开始了解Diffusion Models](https://www.bilibili.com/video/BV13P411J7dm)  
 2. [https://ayandas.me/blog-tut/2021/12/04/diffusion-prob-models.html](https://ayandas.me/blog-tut/2021/12/04/diffusion-prob-models.html)  

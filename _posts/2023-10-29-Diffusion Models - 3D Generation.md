@@ -82,3 +82,16 @@ NeRF除了使用SDS进行优化以外，还使用GT单视角图片进行监督�
 {% include figure.html path="assets/img/Pasted image 20231030012551.png" width="100%" %}  
   
 # 23-04-05_Chan_Generative Novel View Synthesis with 3D-Aware Diffusion Models  
+{% include figure.html path="assets/img/Pasted image 20231118183023.png" width="100%" %}  
+和其它的新视角生成模型相比，不同的就是condition的方式  
+zero123是将相机参数融合到图像的CLIP embedding里  
+这个方法是引入了nerf，首先将一个或多个视角的图片编码得到nerf表示，然后进行体渲染得到目标视角的feature作为condition  
+为什么要引入nerf？TODO  
+# 23-06-16_DreamSparse: Escaping from Plato's Cave with 2D Frozen Diffusion Model Given Sparse Views  
+{% include figure.html path="assets/img/Pasted image 20231118193101.png" width="100%" %}  
+又提供了一种将目标视角作为condition的方法，目前看不懂  
+# 23-06-29_One-2-3-45: Any Single Image to 3D Mesh in 45 Seconds without Per-Shape Optimization  
+{% include figure.html path="assets/img/Pasted image 20231118195042.png" width="100%" %}  
+直接使用Zero123生成的多视角图片进行NeRF重建效果不好，是因为Zero123生成的图片具有多视角不一致性  
+本方法使用Zero123生成的有缺陷的图片作为SparseNeuS的输入进行重建  
+这个方法没有重新训练或微调一个扩散模型，而是利用了现有的Zero123进行多视角图片的生成3D模型，并且不是基于SDS那样的优化方法，生成速度更快  

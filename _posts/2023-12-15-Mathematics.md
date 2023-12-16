@@ -16,6 +16,7 @@ toc:
 ---  
 # Score Matching  
 Objective:  
+  
 $$  
 \begin{align}  
 J(\theta)  

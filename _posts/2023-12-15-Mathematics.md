@@ -14,8 +14,8 @@ authors:
 toc:  
   - name: DPMs  
 ---  
-# Score Matching  
-Objective:  
+# 得分匹配  
+目标:  
   
 $$  
 \begin{align}  
@@ -52,8 +52,8 @@ J(\theta)
 &= \mathbb{E}_{x\sim p(x)}  
 \left[  
 \Vert s(x;\theta) \Vert^2  
-\right]   
--2\sum_i\iint\cdots\int_{x_i\in\mathbb{R}}  
+\right] -\\  
+&2\sum_i\iint\cdots\int_{x_i\in\mathbb{R}}  
 \left(  
 \underbrace{s_i(x;\theta) p(x)\bigg|_{x_i\to-\infty}^{x_i\to+\infty}}_{\lim_{x_i\to\infty} s_i(x;\theta)p(x)\to 0}  
 -\frac{\partial s_i(x;\theta)}{\partial x_i}p(x)  
@@ -106,4 +106,24 @@ J(\theta)
 +2\mathrm{tr}(\nabla_x s(x;\theta))  
 \right] + \text{constant}  
 \end{align}  
+$$  
+  
+# 期望符号的下标  
+期望符号的下标有两种含义：  
+1. 下标符号中的变量作为条件：$$\mathbb{E}_{x}\left[y\right]=\mathbb{E}\left[y\vert x\right]$$  
+2. 下标符号中的变量用作计算平均：$$\mathbb{E}_{x}\left[y\right]=\int yp(x)\mathrm{d}x$$  
+  
+# KL散度和交叉熵相对Logits的梯度  
+$$  
+\frac  
+{\partial \mathcal{L}_{\mathrm KD}}  
+{\partial z_i}  
+= \tau \left(\hat{y}^s_{i,\tau} - \hat{y}^t_{i,\tau}\right)  
+$$  
+  
+$$  
+\frac  
+{\partial \mathcal{L}_{\mathrm CE}}  
+{\partial z_i}  
+= \hat{y}^s_{i,1} - \hat{y}_{i}  
 $$

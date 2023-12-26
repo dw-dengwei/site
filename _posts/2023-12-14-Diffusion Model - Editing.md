@@ -12,6 +12,7 @@ authors:
     affiliations:  
       name: nil  
 toc:  
-  - name: DPMs  
+  - name: notes  
 ---  
-见 https://cn.overleaf.com/read/rgbxvzvjdqmf#68ca75
+见 https://cn.overleaf.com/read/rgbxvzvjdqmf#68ca75  
+使用PDF only布局

@@ -14,5 +14,14 @@ authors:
 toc:  
   - name: notes  
 ---  
-见 https://cn.overleaf.com/read/rgbxvzvjdqmf#68ca75  
-使用PDF only布局
+Click [here](https://cn.overleaf.com/read/rgbxvzvjdqmf#68ca75)  
+use PDF-only layout  
+# Paper list  
+| title                                                                             |  
+| --------------------------------------------------------------------------------- |  
+| SDEdit: Guided Image Synthesis and Editing with Stochastic Differential Equations |  
+| Prompt-to-Prompt Image Editing with Cross Attention Control                       |  
+| DiffusionCLIP: Text-Guided Diffusion Models for Robust Image Manipulation         |  
+| Pluralistic Aging Diffusion Autoencoder                                           |  
+| Diffusion Autoencoders: Toward a Meaningful and Decodable Representation          |  
+| DiffMorpher: Unleashing the Capability of Diffusion Models for Image Morphing     |   
